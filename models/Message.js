@@ -1,18 +1,17 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const UserSchema = new Schema({
-  providerID: {
-    type: String,
-    unique: true
-  },
-  name: {
+const MessageSchema = new Schema({
+  userID: {
     type: String
   },
-  surname: {
+  userName: {
     type: String
   },
-  provider: {
+  userSurname: {
+    type: String
+  },
+  message: {
     type: String
   },
   date: {
@@ -21,6 +20,6 @@ const UserSchema = new Schema({
   }
 });
 
-const User = mongoose.model('User', UserSchema);
+const Message = mongoose.model('Message', MessageSchema);
 
-module.exports = User;
+module.exports = Message;

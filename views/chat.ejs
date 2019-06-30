@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="/css/chat.css">  
+  <title>chat-app</title>
+</head>
+<body>
+  <h3 class="text-center pt-3">Welcome to chat <%=user.name%></h3>
+  <ul class="nav">
+    <li class="nav-item">
+      <a class="nav-link" href="/auth/logout">Logout</a>
+    </li>
+  </ul>
+  <div class="container">
+    <div id="chat-output" class="chat-output bg-info">
+
+    </div>
+    <textarea id="message" type="text" name="message"></textarea>
+    <button id="send-button">Send</button>
+  </div>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  const socket = io(),
+        message = document.getElementById('message'),
+        chat = document.getElementById('chat-output'),
+        sendButton = document.getElementById('send-button');
+
+  sendButton.addEventListener('click', () => {
+    if (message.value) socket.emit('chat', {
+      userID: '<%=user.id%>',
+      userName: '<%=user.name%>',
+      userSurname: '<%=user.surname%>',
+      message: message.value
+    })
+  });
+
+  socket.on('chatHistory', (data) => {
+    data.forEach((item) => {
+      chat.innerHTML += '<p><span>' + item.date + '</span><br><strong>' + item.userName 
+        + ' ' + item.userSurname + ': </strong>' + item.message; 
+    });
+  });
+
+  socket.on('chat', (data) => {
+    chat.innerHTML += '<p><span>' + data.date + '</span><br><strong>' + data.userName 
+        + ' ' + data.userSurname + ': </strong>' + data.message; 
+  });
+
+  
+</script>
+</body>
+</html>
