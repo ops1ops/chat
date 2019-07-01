@@ -6,6 +6,9 @@ const UserSchema = new Schema({
     type: String,
     unique: true
   },
+  nickname: {
+    type: String,
+  },
   name: {
     type: String
   },

@@ -3,50 +3,70 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+  <!-- Bootstrap core CSS -->
+  <link href="/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Material Design Bootstrap -->
+  <link href="/css/mdb.min.css" rel="stylesheet">
+  <link href="/css/bootstrap-social.css" rel="stylesheet">
   <link rel="stylesheet" href="/css/chat.css">  
   <title>chat-app</title>
 </head>
 <body>
-  <h3 class="text-center pt-3">Welcome to chat <%=user.name%></h3>
-  <ul class="nav">
-    <li class="nav-item">
-      <a class="nav-link" href="/auth/logout">Logout</a>
-    </li>
-  </ul>
-  <div class="container">
-    <div id="chat-output" class="chat-output bg-info">
-
+  <header>
+    <nav class="navbar navbar-expand-lg navbar-dark primary-color">
+      <a class="navbar-brand mr-auto" href="/"><strong>Chat-app</strong></a>
+      <ul class="navbar-nav nav-flex-icons">
+          <li class="nav-item">
+            <a class="nav-link" href="/auth/logout">Logout</a>
+          </li>
+        </ul>
+    </nav>
+  </header>
+  <div class="container container-chat mt-2 white">
+    <div id="chat-output" class="chat-output py-2">
     </div>
-    <textarea id="message" type="text" name="message"></textarea>
-    <button id="send-button">Send</button>
+  </div>
+  <div class="user-input d-flex">
+    <textarea class="form-control z-depth-1" id="message" rows="1" placeholder="Type your message..."></textarea>
+    <button class="btn btn-sm btn-primary btn-radius" id="send-button"><i class="fas fa-paper-plane"></i></button>
   </div>
 <script src="/socket.io/socket.io.js"></script>
 <script>
   const socket = io(),
         message = document.getElementById('message'),
         chat = document.getElementById('chat-output'),
-        sendButton = document.getElementById('send-button');
+        sendButton = document.getElementById('send-button'),
+        container = document.getElementsByClassName('container')[0];
 
   sendButton.addEventListener('click', () => {
-    if (message.value) socket.emit('chat', {
-      userID: '<%=user.id%>',
-      userName: '<%=user.name%>',
-      userSurname: '<%=user.surname%>',
-      message: message.value
-    })
+    if (message.value) {
+      socket.emit('chat', {
+        userID: '<%=user.id%>',
+        nickname: '<%=user.nickname%>',
+        message: message.value
+      });
+      message.value = "";
+    }
   });
 
+  function renderChat(data) {
+    console.log(data.date)
+    chat.innerHTML += '<div class="message mb-1"><small class="grey-text">' + data.date + '</small><br><strong class="text-primary">' 
+      + data.nickname + ': </strong>' + data.message + '</div>'; 
+    container.scrollTop = container.scrollHeight;
+  }
+
   socket.on('chatHistory', (data) => {
+    chat.innerHTML = '';
     data.forEach((item) => {
-      chat.innerHTML += '<p><span>' + item.date + '</span><br><strong>' + item.userName 
-        + ' ' + item.userSurname + ': </strong>' + item.message; 
+      renderChat(item);
     });
   });
 
   socket.on('chat', (data) => {
-    chat.innerHTML += '<p><span>' + data.date + '</span><br><strong>' + data.userName 
-        + ' ' + data.userSurname + ': </strong>' + data.message; 
+    renderChat(data);
   });
 
   

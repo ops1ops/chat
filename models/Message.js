@@ -5,11 +5,8 @@ const MessageSchema = new Schema({
   userID: {
     type: String
   },
-  userName: {
-    type: String
-  },
-  userSurname: {
-    type: String
+  nickname: {
+    type: String,
   },
   message: {
     type: String

@@ -10,8 +10,10 @@ const passport = require('passport');
 const cookieSession = require('cookie-session');
 
 const app = express();
+process.env.TZ = 'Europe/Minsk';
 
-console.log(__dirname);
+
+console.log(new Date());
 app.use(express.static(__dirname + '/public'));
 app.set("view engine", "ejs");
 

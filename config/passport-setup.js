@@ -23,6 +23,7 @@ passport.use(
     callbackURL:  `http://localhost:3000/auth/vk/redirect`
   }, (accessToken, refreshToken, params, profile, done) => {
     User.findOne({ providerID: profile.id }).then((currentUser) => {
+      console.log(profile);
       if (currentUser) {
         console.log('currentUser: ' + currentUser);
         done(null, currentUser);
@@ -30,8 +31,9 @@ passport.use(
         console.log(profile);
         new User({
           providerID: profile.id,
-          name: profile._json.first_name,
-          surname: profile._json.last_name,
+          nickname: profile.displayName,
+          name: profile.name.givenName,
+          surname: profile.name.familyName,
           provider: profile.provider
         }).save()
           .then((newUser) => {
@@ -52,17 +54,8 @@ passport.use(
     callbackURL:  'http://localhost:3000/auth/facebook/redirect'
   }, (accessToken, refreshToken, params, profile, done) => {
     console.log(profile);
-    console.log('params: ' + params);
-  }
-));
-
-passport.use(
-  new Google( {
-    clientID: keys.vk.clientID,
-    clientSecret: keys.vk.clientSecret,
-    callbackURL:  `http://localhost:3000/auth/vk/redirect`
-  }, (accessToken, refreshToken, params, profile, done) => {
     User.findOne({ providerID: profile.id }).then((currentUser) => {
+      console.log(profile);
       if (currentUser) {
         console.log('currentUser: ' + currentUser);
         done(null, currentUser);
@@ -70,8 +63,9 @@ passport.use(
         console.log(profile);
         new User({
           providerID: profile.id,
-          name: profile._json.first_name,
-          surname: profile._json.last_name,
+          nickname: profile.displayName,
+          name: profile.name.givenName,
+          surname: profile.name.familyName,
           provider: profile.provider
         }).save()
           .then((newUser) => {
@@ -81,7 +75,35 @@ passport.use(
         );
       }
     });
-    
+  }
+));
+
+passport.use(
+  new GoogleStrategy( {
+    clientID: keys.google.clientID,
+    clientSecret: keys.google.clientSecret,
+    callbackURL:  `http://localhost:3000/auth/google/redirect`
+  }, (accessToken, refreshToken, params, profile, done) => {
+    User.findOne({ providerID: profile.id }).then((currentUser) => {
+      if (currentUser) {
+        console.log('currentUser: ' + currentUser);
+        done(null, currentUser);
+      } else {
+        console.log(profile);
+        new User({
+          providerID: profile.id,
+          nickname: profile.displayName,
+          name: profile.name.givenName,
+          surname: profile.name.familyName,
+          provider: profile.provider
+        }).save()
+          .then((newUser) => {
+            console.log('new user created: ' + newUser);
+            done(null, newUser);
+          }
+        );
+      }
+    });
   }
 ));
 

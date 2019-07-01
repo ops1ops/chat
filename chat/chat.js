@@ -8,15 +8,16 @@ module.exports = (server) => {
 
   io.on('connection', (socket) => {
     console.log(`User connected.`);
-    Message.find({}, (err, messages) => {
+    Message.find({}).sort({date: 'asc'}).exec((err, messages) => {
+      // console.log(messages);
       socket.emit('chatHistory', messages);
     });
     socket.on('chat', (data) => {
       new Message({
         userID: data.userID,
-        userName: data.userName,
-        userSurname: data.userSurname,
-        message: data.message
+        nickname: data.nickname,
+        message: data.message,
+        date: Date.now()
       }).save()
         .then((message) => {
           console.log('message saved successfully: ' + message);
