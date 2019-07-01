@@ -8,7 +8,7 @@ module.exports = (server) => {
 
   io.on('connection', (socket) => {
     console.log(`User connected.`);
-    Message.find({}).sort({date: 'asc'}).exec((err, messages) => {
+    Message.find({}).sort({date: 'asc'}).lean().exec((err, messages) => {
       // console.log(messages);
       socket.emit('chatHistory', messages);
     });

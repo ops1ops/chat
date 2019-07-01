@@ -36,6 +36,13 @@ app.get('/', (req, res) => {
   res.redirect('chat');
 });
 
+app.use(function(req, res, next){
+  // the status option, or res.statusCode = 404
+  // are equivalent, however with the option we
+  // get the "status" local available as well
+  res.render('404', { status: 404, url: req.url });
+});
+
 const server = app.listen(config.PORT, console.log(`Server started on port ${config.PORT}`));
 
 require('./chat/chat')(server);

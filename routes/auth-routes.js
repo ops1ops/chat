@@ -19,9 +19,14 @@ router.get('/vk', passport.authenticate('vkontakte', {
   scope: ['profile', 'notify']
 }));
 
-router.get('/vk/redirect', passport.authenticate('vkontakte', { successRedirect: '/',
-failureRedirect: '/login'  }), (req, res) => {
-  res.redirect('/chat');
+router.get('/vk/redirect', function (req, res, next) {
+  passport.authenticate('vkontakte', (err, user, info) => {
+    if (err) { return res.redirect('/auth/login') }
+    req.logIn(user, function(err) {
+      if (err) { return next(err); }
+      return res.redirect('/chat');
+    });
+  })(req, res, next);
 });
 
 router.get('/facebook', passport.authenticate('facebook', {
@@ -29,7 +34,7 @@ router.get('/facebook', passport.authenticate('facebook', {
 }));
 
 router.get('/facebook/redirect',  passport.authenticate('facebook', { successRedirect: '/',
-failureRedirect: '/login'  }), (req, res) => {
+failureRedirect: '/auth/login'}), (req, res) => {
   res.redirect('/chat');
 });
 
